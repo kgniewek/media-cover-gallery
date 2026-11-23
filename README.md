@@ -2,7 +2,7 @@
 
 Plain lines like `Pressure (2026)` turn into a clean gallery of posters and covers. Nothing to set up.
 
-![Movies, games and albums shown as a gallery](images/gallery.webp)
+![Movies, games and albums shown as a gallery](images/gallery.png)
 
 ### Works out of the box
 
@@ -12,7 +12,7 @@ Plain lines like `Pressure (2026)` turn into a clean gallery of posters and cove
 
 Click a cover for a larger view with a short description and a link to Wikipedia.
 
-![Cover preview](images/preview.webp)
+![Cover preview](images/preview.png)
 
 ### Simple on purpose
 
