@@ -1,134 +1,124 @@
-### Your movies, books, games and albums, as a wall of covers
+### Your website links, as a gallery of preview cards
 
-Plain lines like `Pressure (2026)` turn into a clean gallery of posters and covers. Nothing to set up.
+Website links turn into a clean gallery with images, titles, descriptions and domains.
 
-![Movies, games and albums shown as a gallery](images/gallery.png)
+![Website links shown as a gallery of preview cards](images/gallery.webp)
 
-### Works out of the box
+### Open any website without leaving your notes
 
-**No account. No API key. No sign-up.** Install, write a list, done. Covers come from Wikipedia, which is free and public.
+Click a card to open the site in a floating window that you can drag, resize and keep open while you work.
 
-### Preview without leaving your notes
+![Floating website window over a gallery of preview cards](images/floating-window.webp)
 
-Click a cover for a larger view with a short description and a link to Wikipedia.
+### Screenshots as thumbnails
 
-![Cover preview](images/preview.png)
+Replace a card's image with a screenshot of the page, for one link or a whole note at once.
 
-### Simple on purpose
+![Cards with screenshot thumbnails and the right-click menu](images/screenshots-as-thumbnails.webp)
 
-Adjust covers per row, spacing, corners, hover effects and titles. That's it.
+### Extensive options
+
+Adjust the card layout, spacing, hover effects, title size, screenshots and more.
 
 ![The settings page](images/settings.png)
 
 Highlights
 
-* **Movies, books, games and albums** in one list. The plugin works out which is which.
-* **Titles on hover by default**, as a tooltip. You can also show them always below the cover, on hover below the cover, centered over a darkened cover on hover, or never.
-* **Optional grouping** by type, genre, decade or director/author/artist/developer.
-* **Fetched details are cached**, so covers load instantly the next time.
+* **Preview cards** from plain links and Markdown links, with the website's image, title, description and domain.
+* **Floating website window** you can drag, resize and browse in, without leaving your note.
+* **Screenshot thumbnails** saved on your computer, with scrollbars and cookie banners hidden.
+* **Gallery and note tools** that fill in missing pictures for many links at once.
+* **Works out of the box.** No account or API key needed. Cards show in Reading View only.
 
 ### Features
 
-#### Galleries
+#### Cards
 
-* Two or more consecutive lines in the form `Title (Year)` become one gallery. Lines in a bullet list work too.
-* Albums are written `Artist - Album (Year)` and get square covers:
+* Links on their own lines, or in a list, become preview cards. Several links in a row become one gallery.
+* Horizontal or vertical cards, 1 to 4 per row, three card backgrounds, spacing, title size and title lines.
+* Hover effects: a highlight and an optional zoom on the image.
+* If a site has no usable image, its favicon is shown instead.
+* Works well on mobile, with the same layout settings as on desktop. If you sync your vault, it is recommended not to sync this plugin's settings, so you can keep different settings on your phone and your computer: with Obsidian Sync, leave community plugin syncing off (the default); with Git, add `.obsidian/plugins/website-link-gallery/data.json` to your `.gitignore`.
 
-```text
-Heat (1995)
-Dune (1965, book)
-Doom (2016)
-Daft Punk - Discovery (2001)
-```
+Each card's picture is chosen in this order:
 
-* Or use a code block. Here the year is optional:
+1. Your saved screenshot of the page, if you took one
+2. Image from the page (`og:image`, `twitter:image`, `image\\\\\\\\\\\\\\\_src`)
+3. Icon declared by the page (apple-touch-icon / `rel="icon"`)
+4. `/favicon.ico` of the site
+5. Google favicon service
 
-````markdown
-```movies
-Pressure (2026)
-The Return (2024)
-Enemy at the Gates (2001)
-```
-````
+#### Floating window
 
-  Code blocks named `books`, `games` or `albums` work the same way and assume that type.
+* Opens from a card with **Open in Obsidian**. `Ctrl` / `Cmd` + click opens your browser instead.
+* Drag it by the top bar and resize it from the sides or bottom.
+* Links inside the website work, and links that would open a new tab load in the same window.
+* Back, previous and next card, screenshot, copy link, open in browser and close buttons.
+* The bar shows the domain, or the full address without `https://` if you turn that option on.
+* It keeps its own browser session, separate from Obsidian's Web viewer and your normal browser.
+* Desktop only.
 
-* **Optional:** if the plugin picks the wrong one (a movie instead of the book, say), add a tag after the year. It is never required.
+#### Screenshots
 
-```text
-The Lord of the Rings (2001, film)
-The Lord of the Rings (1954, book)
-Doom (2016, game)
-Title (2020, album)
-```
-
-  Accepted tags: `film`, `movie`, `book`, `novel`, `game`, `album`, `ep`.
-* Lines that are not entries, like a director's name, become small headings, and the entries below them form their own gallery. In a code block, start a line with `#` for a heading.
-* 2 to 8 covers per row (up to 4 on mobile), spacing, corner radius, order (as written, newest, oldest, A to Z).
-* Titles: never, always below the cover, on hover below the cover, tooltip on hover, or centered on hover.
-* Optional remove button: a small x in the top right corner of a cover on hover (off by default).
-* Shadow on hover.
-
-#### Albums
-
-Album lines must be written `Artist - Album (Year)`. Covers are square and come from Wikipedia.
-
-#### Grouping
-
-Under **Settings → Media Cover Gallery → Group by**, split a list into sections:
-
-* **Genre**: action, thriller, fantasy, shooter, rock and so on
-* **Decade**
-* **Director / author / artist / developer**
-
-Genre and creator come from Wikidata and are cached. Coverage varies, especially for games and albums. Anything unmatched goes to **Other**.
+* Loads the page in a hidden, desktop-sized browser, waits for it to settle and saves the top of the page as an image.
+* Hides scrollbars and, if you leave the option on, cookie banners. Nothing is accepted or rejected.
+* Saved as image files in the plugin folder, so they work offline. If a screenshot is missing on another device, the card falls back to the website's own image.
+* The camera button in the floating window saves exactly what the window shows as that card's thumbnail.
+* **Screenshot width** sets how wide the hidden browser is and how large the saved image can be.
+* Desktop only.
 
 #### Right-click menu
 
-* Preview, full image, open on Wikipedia, search on Google, search on YouTube, copy title.
-* **Fetch again** re-downloads that cover. It only shows when grouping is on. With grouping by genre or director/author/artist/developer you also get **Refresh genres** or **Refresh creators**.
-* **Remove** deletes the line from your note, with an Undo button for a few seconds.
-* If nothing is found, the cover shows its title and clicking it searches Wikipedia.
+* **Open in Obsidian** and **Open in browser**.
+* **Screenshot** takes or retakes a screenshot thumbnail for this card.
+* **Image / icon** switches the card back to the website's own image or favicon.
+* **Gallery: Screenshot all** and **Gallery: Fill in missing** work on every card in the gallery you clicked. Filling in missing only touches the cards that still need a picture.
+* **Note: Screenshot all** and **Note: Fill in missing** do the same for every link in the note.
+* **Copy link** and **Copy title**.
+* **Remove link** deletes the line holding the link from the note, without leaving reading view.
 
-#### Installation
+#### Tools
 
-**From Community plugins**
-
-1. Open **Settings → Community plugins** and turn off Restricted mode.
-2. Select **Browse**, search for **Media Cover Gallery**, then **Install** and **Enable**.
-
-**Manually**
-
-1. Download `main.js`, `manifest.json` and `styles.css` from the latest release.
-2. Put them in `<your vault>/.obsidian/plugins/media-cover-gallery/`.
-3. Reload Obsidian and enable the plugin under **Settings → Community plugins**.
+* Choose which websites should stay normal links (YouTube links are skipped by default).
+* Paste a lone website link and get a titled Markdown link automatically.
+* Add missing titles to bare website links across your vault. Back up your vault first.
+* Clear the saved page information. Screenshots are kept.
 
 #### Usage
 
-Write your list and switch the note to Reading View. All options are under **Settings → Media Cover Gallery**.
+Put website links on their own lines:
 
-If you sync your vault, you may prefer not to sync this plugin's settings, so your phone and computer can look different. With Obsidian Sync, leave community plugin syncing off (the default). With Git, add `.obsidian/plugins/media-cover-gallery/data.json` to your `.gitignore`.
+```markdown
+https://obsidian.md
+https://github.com
+
+https://www.nasa.gov
+```
+
+Markdown links work as well, and their text is used as the title:
+
+```markdown
+\\\\\\\\\\\\\\\[Obsidian Help](https://help.obsidian.md)
+```
+
+Links in a list work too, when the item holds only the link:
+
+```markdown
+- https://example.com
+- \\\\\\\\\\\\\\\[Example docs](https://example.com/docs)
+```
+
+Links inside regular sentences are left untouched. Switch the note to Reading View to see the cards. All options are under **Settings → Website Link Gallery**.
 
 #### Network use and privacy
 
-The plugin needs the internet to show covers. It contacts:
+The plugin needs the internet to build cards. It contacts:
 
-* `en.wikipedia.org` (API) for details, plus up to one other language edition (for example `pl.wikipedia.org`) if you pick a different main or second language in the settings
-* `upload.wikimedia.org` for the images
-* `itunes.apple.com` for larger album artwork, only when you open an album's full image
-* `www.wikidata.org` for genre and director, only when you use grouping by genre or creator
-* `wikipedia.org`, `www.imdb.com` (films), `www.google.com` and `www.youtube.com` only when you open a link from a cover or use a search from the right-click menu
+* **The websites in your links**: it downloads each page to read its title, description and image, and your device loads each card's image and icon directly from the site.
+* `www.google.com/s2/favicons` as the last fallback for a favicon.
+* **The website itself** when you open it in the floating window or take a screenshot, using an embedded browser.
 
-There is no account, no API key, no analytics and no tracking. Fetched details are cached in the plugin's data file for 30 days (unmatched titles for 1 day).
-
-#### Limitations
-
-* Galleries show in Reading View only, not in Live Preview or Source mode.
-* Matching is done by title and year on Wikipedia. For very common titles, add the year, or a tag like `(2016, game)`.
-* Some very new or obscure titles may have no cover and will show their title instead.
-* For books, the year is the first publication year. Remakes and adaptations share titles, so add the year or a tag like `(1965, book)`.
-* Plain lines are only detected when at least two lines in a row match. For a single entry, use a code block.
-* Genre and creator data is incomplete on Wikidata, so some items land in **Other**.
+Page details are cached in the plugin's data file for 14 days so they aren't requested again. There is no analytics or tracking. Screenshots are saved as image files in the plugin's `screenshots` folder and never leave your computer.
 
 #### Support
 
@@ -138,7 +128,7 @@ If you enjoy the plugin, you can [buy me a coffee](https://buymeacoffee.com/kgni
 
 #### Disclaimer
 
-Details and images come from Wikipedia (text under CC BY-SA; covers and posters belong to their rights holders) and Wikidata (CC0). Titles, posters and covers remain the property of their owners.
+Previews and screenshots show content from the websites you link to, which remains the property of its owners. You are responsible for using the plugin in line with those websites' terms.
 
 #### License
 

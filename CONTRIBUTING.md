@@ -1,4 +1,4 @@
-# Contributing to Media Cover Gallery
+# Contributing to Advanced Web Link Features
 
 Thanks for wanting to help. Bug reports, suggestions and code contributions are all welcome.
 
