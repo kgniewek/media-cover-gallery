@@ -1,10 +1,10 @@
 {
-  "id": "advanced-web-link-features",
-  "name": "Advanced Web Link Features",
-  "version": "1.1.0",
-  "minAppVersion": "1.7.2",
-  "description": "Turn website links into preview cards with the site's title and domain, plus its image or a screenshot of the page. Open any site in a floating web browser window without leaving your notes.",
-  "author": "kgniewek",
-  "fundingUrl": "https://buymeacoffee.com/kgniewek",
-  "isDesktopOnly": false
+	"id": "media-cover-gallery",
+	"name": "Media Cover Gallery",
+	"version": "1.1.0",
+	"minAppVersion": "1.5.0",
+	"description": "Turn lists of movies, books, games and albums into a clean gallery of posters and covers. Works out of the box, with no account or API key needed.",
+	"author": "kgniewek",
+	"fundingUrl": "https://buymeacoffee.com/kgniewek",
+	"isDesktopOnly": false
 }

@@ -1,13 +1,13 @@
 {
-  "name": "advanced-web-link-features",
+  "name": "advanced-movie-posters",
   "version": "1.1.0",
-  "description": "Turn website links into preview cards with the site's title and domain, plus its image or a screenshot of the page. Open any site in a floating web browser window without leaving your notes.",
+  "description": "Turn plain movie lists like \"Title (2024)\" into a gallery of movie posters.",
   "main": "main.js",
   "scripts": {
     "dev": "esbuild main.ts --bundle --external:obsidian --external:electron --external:@codemirror/* --external:@lezer/* --format=cjs --target=es2020 --sourcemap=inline --outfile=main.js --watch",
     "build": "tsc --noEmit --skipLibCheck && esbuild main.ts --bundle --external:obsidian --external:electron --external:@codemirror/* --external:@lezer/* --format=cjs --target=es2020 --minify --outfile=main.js"
   },
-  "keywords": ["obsidian", "obsidian-plugin", "links", "preview"],
+  "keywords": ["obsidian", "obsidian-plugin", "movies", "posters", "gallery"],
   "license": "PolyForm-Strict-1.0.0",
   "devDependencies": {
     "@types/node": "^20.0.0",
