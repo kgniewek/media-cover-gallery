@@ -112,7 +112,9 @@ The Shining (1980, Kubrick)
 
 #### Albums
 
-Album lines must be written `Artist - Album (Year)`. Covers are square. Under **Sources** you can choose whether album covers come from Apple Music or Wikipedia.
+Album lines must be written `Artist - Album (Year)`. Covers are square.
+
+Albums are looked up on both Wikipedia and Apple Music, so more albums are found, including ones that have no Wikipedia page. Under **Sources** you can choose your preferred source for album covers, Apple Music or Wikipedia.
 
 #### Click actions
 
@@ -194,7 +196,7 @@ The plugin needs the internet to show covers. It contacts:
 
 * `en.wikipedia.org` (API) for details, plus up to one other language edition (for example `pl.wikipedia.org`) if you pick a different main or second language in the settings
 * `upload.wikimedia.org` for the images
-* `itunes.apple.com` and Apple's image servers for album covers, if you use Apple Music as the album cover source, and for larger album artwork
+* `itunes.apple.com` and Apple's image servers for albums that Wikipedia does not have, for album covers if you use Apple Music as the album cover source, and for larger album artwork
 * `openlibrary.org` and `covers.openlibrary.org` for books only, and only when Wikipedia has no cover for them
 * `www.wikidata.org` for genre and director, only when you use grouping by genre or creator, or **Change match…**
 * `api.themoviedb.org` and `image.tmdb.org` for film and TV posters, only if you add a TMDB API key and choose a TMDB poster option
@@ -212,6 +214,7 @@ There is no account, no analytics and no tracking. Fetched details are cached in
 * Names are checked against the introduction of the Wikipedia article, which works best with English Wikipedia. If a name does not match anything, the plugin falls back to the year and tag.
 * Plain lines are only detected when at least two lines in a row match. For a single entry, use a code block.
 * Open Library covers are matched by title, year (within 3 years) and author, so for common book titles add the year or the author, like `(1965, Herbert)`.
+* Albums are matched by artist and album title, so write the artist and title the way Wikipedia or Apple Music lists them. Albums found only on Apple Music have no description or genre, so they land in **Other** when grouped by genre.
 * Genre and creator data is incomplete on Wikidata, so some items land in **Other**.
 * TMDB posters are only used for films and TV series.
 

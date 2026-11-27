@@ -1,7 +1,7 @@
 {
 	"id": "media-cover-gallery",
 	"name": "Media Cover Gallery",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"minAppVersion": "1.5.0",
 	"description": "Turn lists of movies, books, games and albums into a clean gallery of posters and covers. Works out of the box, with no account or API key needed.",
 	"author": "kgniewek",

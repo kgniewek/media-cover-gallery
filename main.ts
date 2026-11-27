@@ -55,6 +55,7 @@ interface MovieInfo {
 	artwork?: string;
 	overview: string;
 	url?: string;
+	urlLabel?: string;
 }
 
 interface CacheEntry {
@@ -147,7 +148,7 @@ const DEFAULT_SETTINGS: MoviePosterSettings = {
 	cache: {},
 };
 
-const CACHE_PREFIX = "v9|";
+const CACHE_PREFIX = "v10|";
 const FULL_IMAGE_SIZE = 1400;
 const ITUNES_SIZES = [3000, 1400];
 const appleArt = (art: string, size: number): string => art.replace(/\d+x\d+(?:bb|cc|sr)?(\.\w+)$/, `${size}x${size}bb$1`);
@@ -525,6 +526,7 @@ interface ITunesResult {
 	collectionName?: string;
 	artistName?: string;
 	artworkUrl100?: string;
+	collectionViewUrl?: string;
 }
 
 interface WikiPage {
@@ -686,8 +688,7 @@ export default class MoviePosterPlugin extends Plugin {
 		if (!["none", "stars", "points"].includes(this.settings.rating)) this.settings.rating = "none";
 		if (data.preferTmdb === true && !("tmdbPosters" in data)) this.settings.tmdbPosters = "textless";
 		if (!["off", "title", "original", "textless"].includes(this.settings.tmdbPosters)) this.settings.tmdbPosters = "off";
-		if (!["apple", "wikipedia"].includes(this.settings.albumCovers)) this.settings.albumCovers = "apple";
-		if (!["always", "hover"].includes(this.settings.ratingMode)) this.settings.ratingMode = "hover";
+		if (!["apple", "wikipedia"].includes(this.settings.albumCovers)) this.settings.albumCovers = "apple";		if (!["always", "hover"].includes(this.settings.ratingMode)) this.settings.ratingMode = "hover";
 		if ("removeButton" in data && !("removeMode" in data)) this.settings.removeMode = data.removeButton === true ? "big" : "none";
 		if (!["none", "big", "small"].includes(this.settings.removeMode)) this.settings.removeMode = "small";
 		if (data.checkButton === true && !("checkMode" in data)) this.settings.checkMode = "always";
@@ -1756,7 +1757,7 @@ export default class MoviePosterPlugin extends Plugin {
 				const found = info;
 				menu.addItem((i) => i.setTitle("Preview").setIcon("info").onClick(() => this.openPreview(found, item)));
 				menu.addItem((i) => i.setTitle("Full image").setIcon("image").onClick(() => this.openImage(found, item)));
-				menu.addItem((i) => i.setTitle(found.url ? "Open Library" : "Wikipedia").setIcon("external-link").onClick(() => window.open(sourceUrl(found), "_blank")));
+				menu.addItem((i) => i.setTitle(found.url ? (found.urlLabel ?? "Open Library") : "Wikipedia").setIcon("external-link").onClick(() => window.open(sourceUrl(found), "_blank")));
 			} else {
 				menu.addItem((i) => i.setTitle("Search on Wikipedia").setIcon("search").onClick(() => window.open(wikiSearchUrl(entry.title, this.wikiLanguages()[0]), "_blank")));
 			}
@@ -2107,7 +2108,7 @@ export default class MoviePosterPlugin extends Plugin {
 		if (info.overview) side.createEl("p", { cls: "amp-lightbox-overview", text: info.overview });
 		const buttons = side.createDiv({ cls: "amp-lightbox-buttons" });
 		const entry: Entry = { title: info.title, year: info.year, hint: info.kind };
-		const links: [string, string][] = [[info.url ? "Open Library" : "Wikipedia", sourceUrl(info)]];
+		const links: [string, string][] = [[info.url ? (info.urlLabel ?? "Open Library") : "Wikipedia", sourceUrl(info)]];
 		if (info.kind === "film" || info.kind === "tv") links.push(["IMDb", imdbUrl(info.title, info.year)]);
 		links.push(["YouTube", this.actionUrl("youtube", entry, info)], ["Search", this.actionUrl("google", entry, info)]);
 		for (const [text, url] of links) {
@@ -2193,7 +2194,7 @@ export default class MoviePosterPlugin extends Plugin {
 		return urls;
 	}
 
-	private async itunesAlbumArt(artist: string | undefined, title: string): Promise<string | null | undefined> {
+	private async itunesAlbumArt(artist: string | undefined, title: string): Promise<{ art: string; url?: string } | null | undefined> {
 		const url = new URL("https://itunes.apple.com/search");
 		const term = artist ? `${artist} ${title}` : title;
 		for (const [name, value] of Object.entries({ term, media: "music", entity: "album", limit: "15" })) url.searchParams.set(name, value);
@@ -2202,12 +2203,19 @@ export default class MoviePosterPlugin extends Plugin {
 			if (response.status !== 200) return undefined;
 			const results = (response.json as { results?: ITunesResult[] }).results ?? [];
 			const wanted = baseTitle(title);
-			for (const result of results) {
-				if (!result.artworkUrl100) continue;
-				if (artist && baseTitle(result.artistName ?? "") !== baseTitle(artist)) continue;
-				const name = (result.collectionName ?? "").replace(/\s+-\s+(?:single|ep)$/i, "");
-				if (baseTitle(name) !== wanted) continue;
-				return result.artworkUrl100;
+			const who = artist ? baseTitle(artist) : "";
+			for (const loose of [false, true]) {
+				for (const result of results) {
+					if (!result.artworkUrl100) continue;
+					if (who) {
+						const found = baseTitle(result.artistName ?? "");
+						const same = found === who || (loose && found.length >= 3 && who.length >= 3 && (found.includes(who) || who.includes(found)));
+						if (!same) continue;
+					}
+					const name = (result.collectionName ?? "").replace(/\s+-\s+(?:single|ep)$/i, "");
+					if (baseTitle(name) !== wanted) continue;
+					return { art: result.artworkUrl100, url: result.collectionViewUrl };
+				}
 			}
 		} catch {
 			return undefined;
@@ -2217,7 +2225,31 @@ export default class MoviePosterPlugin extends Plugin {
 
 	private async itunesAlbumImages(info: MovieInfo): Promise<string[]> {
 		const art = await this.itunesAlbumArt(info.artist, info.title);
-		return art ? ITUNES_SIZES.map((size) => appleArt(art, size)) : [];
+		return art ? ITUNES_SIZES.map((size) => appleArt(art.art, size)) : [];
+	}
+
+	private async appleOnlyAlbum(entry: Entry): Promise<MovieInfo | null | undefined> {
+		const hint = entry.hint ?? entry.blockHint;
+		if (hint && hint !== "album") return null;
+		const parts = splitAlbum(entry.title);
+		if (!parts) return null;
+		const found = await this.itunesAlbumArt(parts.artist, parts.album);
+		if (!found) return found;
+		const { gallery, preview } = this.quality();
+		return {
+			kind: "album",
+			artist: parts.artist,
+			page: entry.title,
+			lang: this.wikiLanguages()[0],
+			title: parts.album,
+			year: entry.year,
+			poster: appleArt(found.art, gallery),
+			posterHi: appleArt(found.art, preview),
+			artwork: found.art,
+			overview: "",
+			url: found.url ?? searchUrl(`${parts.artist} ${parts.album} album`),
+			urlLabel: found.url ? "Apple Music" : "Google",
+		};
 	}
 
 	private openImage(info: MovieInfo, source?: HTMLElement): void {
@@ -2253,7 +2285,7 @@ export default class MoviePosterPlugin extends Plugin {
 
 	private cacheKey(entry: Entry): string {
 		const maybeAlbum = entry.hint === "album" || (!entry.hint && splitAlbum(entry.title) !== null);
-		const source = maybeAlbum ? (this.settings.albumCovers === "apple" ? "apple" : "wikipedia") : "";
+		const source = maybeAlbum ? this.settings.albumCovers : "";
 		return `${CACHE_PREFIX}q${this.quality().gallery}|${this.wikiLanguages().join("+")}|${source}|${entry.hint ?? ""}|${normalize(entry.title)}|${entry.year}${entry.extra ? `|${normalize(entry.extra)}` : ""}${this.tmdbActive() ? `|tmdb:${this.settings.tmdbPosters}` : ""}`;
 	}
 
@@ -2267,13 +2299,30 @@ export default class MoviePosterPlugin extends Plugin {
 
 		let cacheable = true;
 		const task = this.throttle(async () => {
+			const albumsOn = this.settings.enableAlbums;
+			let appleTried = false;
+			const fromApple = async (): Promise<MovieInfo | null> => {
+				appleTried = true;
+				const found = await this.appleOnlyAlbum(entry);
+				if (found === undefined) {
+					cacheable = false;
+					return null;
+				}
+				return found;
+			};
+
 			let result = await this.searchWikipedia(entry);
-			if (result?.kind === "album" && result.artist && this.settings.albumCovers === "apple") {
+			const wikiFailed = result === undefined;
+			if (!result && albumsOn && !appleTried) {
+				result = (await fromApple()) ?? result;
+				if (result && wikiFailed) cacheable = false;
+			}
+			if (result?.kind === "album" && result.artist && !result.artwork && this.settings.albumCovers === "apple") {
 				const art = await this.itunesAlbumArt(result.artist, result.title);
 				if (art === undefined) cacheable = false;
 				else if (art) {
 					const { gallery, preview } = this.quality();
-					result = { ...result, poster: appleArt(art, gallery), posterHi: appleArt(art, preview), artwork: art };
+					result = { ...result, poster: appleArt(art.art, gallery), posterHi: appleArt(art.art, preview), artwork: art.art };
 				}
 			}
 			if (!result || (result.kind !== "film" && result.kind !== "tv") || !this.tmdbActive()) return result;
